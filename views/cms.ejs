@@ -1,0 +1,33 @@
+<%- include('head') %>
+<div class="container">
+     <h2>CMS</h2>
+  
+  <p><a href="/cms/insert/">Add New</a></p>
+  
+    <table>
+      <tr>
+           <th>Film Name</th>
+           <th></th>
+           <th></th>
+      </tr>
+        
+    <% films.forEach(function(film){ %>
+          <tr>
+            <td>
+            <a href="/film/<%= film._id %>"><%= film.filmName %></a>
+            </td>
+            <td>
+            <a href="/cms/edit/<%= film._id %>">Edit</a>
+            </td>
+                        <td>
+            <a href="/cms/delete/<%= film._id %>">Delete</a>
+            </td>
+          </tr>
+        <% }) %>
+      
+    </table>
+  
+
+    </ul>    
+</div>
+<%- include('footer'); %>

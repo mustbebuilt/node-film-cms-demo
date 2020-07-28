@@ -1,0 +1,45 @@
+<%- include('head') %>
+<div class="container">
+    <h1>Add New Film</h1>
+    
+  <form method="post" action="/cms/insert">
+    <div>
+      <label for="filmName">Film Name</label>
+      <input type="text" name="filmName" id="filmName">
+    </div>
+    <div>
+      <label for="filmCertificate">Film Certificate</label>
+      <input type="text" name="filmCertificate" id="filmCertificate" >
+    </div>
+    <div>
+      <label for="filmDescription">Film Description</label>
+      <textarea name="filmDescription" id="filmDescription">
+
+      </textarea>
+    </div>
+    <div>
+      <label for="filmImage">Film Image</label>
+      <input type="text" name="filmImage" id="filmImage" >
+    </div>
+    <div>
+      <label for="filmPrice">Film Price</label>
+      <input type="text" name="filmPrice" id="filmPrice" >
+    </div>
+    <div>
+      <label for="filmReview">Film Review</label>
+      <input type="text" name="filmReview" id="filmReview" >
+    </div>
+    <div>
+      <label for="releaseDate">Film Review</label>
+      <input type="date" name="releaseDate" id="releaseDate" >
+    </div>
+    <div>
+      <input type="submit" value="Add Film">
+    </div>
+    
+    
+    
+  </form>
+  
+</div>
+<%- include('footer'); %>

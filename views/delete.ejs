@@ -1,0 +1,13 @@
+<%- include('head') %>
+<div class="container">
+    <h1>Delete Film: <%= film.filmName   %></h1>
+<form method="post" action="/cms/delete">
+    <input type="hidden" name="id" id="id" value="<%= film._id  %>">
+    <div>
+      <input type="submit" value="Delete">
+    </div>
+  </form>
+  
+  <p><a href="/cms/">Keep</a></p>
+</div>
+<%- include('footer'); %>

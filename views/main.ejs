@@ -1,0 +1,10 @@
+<%- include('head') %>
+<div class="container">
+    <h1><%= headingOne  %></h1>
+    <%if (showMsg) { %>
+    <p><%= message %></p>
+    <% } else { %>
+    <p>Sorry no message</p>
+    <% } %>
+</div>
+<%- include('footer'); %>

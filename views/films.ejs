@@ -1,0 +1,9 @@
+<%- include('head') %>
+<div class="container">
+    <ul>
+    <% films.forEach(function(film){ %>
+          <li><a href="/film/<%= film._id %>"><%= film.filmName %></a></li>
+        <% }) %>
+    </ul>    
+</div>
+<%- include('footer'); %>
