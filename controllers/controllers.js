@@ -61,7 +61,7 @@ module.exports = {
         })
     },
   
-      getItem: function (app, req, res, view, viewTitle) {
+    getItem: function (app, req, res, view, viewTitle) {
         console.info("Get Item controller")
         let filmID = req.params.filmID;
         var o_id = new ObjectId(filmID);
@@ -179,23 +179,6 @@ module.exports = {
             })
     },
 
-//     amend: function (app, req, res) {
-//         console.info("Amend controller")
-//         let filmID = req.params.filmID;
-//         var o_id = new ObjectId(filmID);
-
-//         app.set('myDb').collection('filmsCollection').find({ "_id": o_id }).toArray(function (err, docs) {
-//             if (err) {
-//                 console.error(err)
-//             }
-//             console.dir(docs);
-//             return res.render('edit', {
-//                 title: docs[0].filmName,
-//                 film: docs[0]
-//             });
-//         })
-//     },
-
     amendItem: function (app, req, res) {
         console.info(" Amend POST controller")
         var amendFilm = req.body;
@@ -230,27 +213,5 @@ module.exports = {
                 film: docs[0]
             });
         })
-    },
-//    deleteItem: function (app, req, res) {
-//         console.info("DELETE controller")
-//         var removeFilm = req.body;
-//         let filmID = removeFilm.id;
-//         var o_id = new ObjectId(filmID);
-//         app.get('myDb').collection("filmsCollection").deleteOne(
-//             { "_id": o_id },
-//             function (err, dbResp) {
-//                 if (err) {
-//                     console.error(err)
-//                 }
-//                 console.info(dbResp.modifiedCount);
-//                 if (dbResp.deletedCount === 1) {
-//                    res.redirect("/cms");
-//                 } else {
-//                    res.redirect("/cms/error");
-//                 }
-//             })
-//     },
-
-    // Add addItem functions
-    // Add editItem and deleteItem functions
+    }
 }
