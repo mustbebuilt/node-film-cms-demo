@@ -7,18 +7,16 @@ const bcrypt = require("bcrypt");
 const saltRounds = 10;
 
 module.exports = {
+  
+      index: function (app, req, res) {
 
-    example: function (app, req, res) {
 
-        if (!req.session.login) {
-            res.redirect("/login");
-        } else {
             console.dir(req.session);
-            return res.render("example", {
-                title: "My EJS Example",
-                message: "Hello EJS Template",
+            return res.render("index", {
+                title: "Welcome",
+                message: "Demo Node Site.",
+                login: req.session.login
             });
-        }
 
     },
 
@@ -45,7 +43,8 @@ module.exports = {
                 }
                 return res.render('films', {
                     title: "All Films",
-                    films: docs
+                    films: docs,
+                    login: req.session.login
                 });
             })
         }
@@ -73,7 +72,8 @@ module.exports = {
             console.dir(docs);
             return res.render(view, {
                 title: `${viewTitle} ${docs[0].filmName}`,
-                film: docs[0]
+                film: docs[0],
+                login: req.session.login
             });
         })
     },
@@ -149,7 +149,8 @@ module.exports = {
                 }
                 return res.render('cms', {
                     title: "All Films",
-                    films: docs
+                    films: docs,
+                    login: req.session.login
                 });
             })
         }
@@ -158,7 +159,8 @@ module.exports = {
     insert: function (app, req, res) {
 
         return res.render('insert', {
-            title: 'Add Film'
+            title: 'Add Film',
+            login: req.session.login
         });
     },
 
@@ -210,7 +212,8 @@ module.exports = {
             console.dir(docs);
             return res.render('delete', {
                 title: docs[0].filmName,
-                film: docs[0]
+                film: docs[0],
+                login: req.session.login
             });
         })
     }

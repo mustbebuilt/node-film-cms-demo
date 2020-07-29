@@ -8,8 +8,8 @@ const myControllers = require("../controllers/controllers.js");
 console.dir(myControllers);
 
 module.exports = (app) => {
-  router.get("/example", (req, res) => {
-    myControllers.example(app, req, res);
+  router.get("/", (req, res) => {
+    myControllers.index(app, req, res);
   });
 
   router.get("/main", (req, res) => {
@@ -39,7 +39,7 @@ module.exports = (app) => {
 
   router.get("/logout", (req, res) => {
     req.session.destroy(function (err) {
-      res.redirect("/login");
+      res.redirect("/");
     });
   });
 
