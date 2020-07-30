@@ -14,14 +14,25 @@ main{
     display:flex;
     flex-direction:column;
 }
-.shoppingCart{
-    
+.error{
+    background-color: #F2011D;
+    color: #ffefef;
+    display:inline-block;
+    padding:3px 5px; 
 }
 .msg {
     background-color: #F2811D;
     color: #260707;
     display:inline-block;
     padding:3px 5px;
+}
+.logReg label{
+  display:block;
+  margin-top:5px;
+}
+.logReg input[type=text], .logReg input[type=password]{
+  padding:5px;
+  margin-bottom:5px;
 }
 table{
     border-collapse:collapse;

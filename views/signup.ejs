@@ -1,14 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>Sign Up</title>
-  </head>
-  <body>
+<%- include('partials/head'); %>
+<div class="container">
     <h1>Sign Up</h1>
-    <form action="/signup" method="post">
+    
+        <% if (locals.registerMsg) { %>
+        <p class="error"><%= registerMsg %></p>
+        <%  } %>
+  
+    <form action="/signup" method="post" class="logReg">
       <div>
         <label for="username">Username</label>
         <input type="text" name="username" id="username" />
@@ -23,5 +21,5 @@
         <input type="submit" value="Sign Up" />
       </div>
     </form>
-  </body>
-</html>
+</div>
+<%- include('partials/footer'); %>

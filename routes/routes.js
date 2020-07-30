@@ -28,9 +28,17 @@ module.exports = (app) => {
     //myControllers.viewItem(app, req, res);
     myControllers.getItem(app, req, res, "oneFilm", "View: " )
   });
+  
+  router.get("/search", (req, res) => {
+    //myControllers.viewItem(app, req, res);
+    myControllers.searchResults(app, req, res);
+  });
 
   router.get("/login", (req, res) => {
-    return res.render("login");
+     return res.render('login', {
+           title: "Login",
+           login: req.session.login
+     });
   });
 
   router.post("/login", (req, res) => {
@@ -44,7 +52,10 @@ module.exports = (app) => {
   });
 
   router.get("/signup", (req, res) => {
-    return res.render("signup");
+     return res.render('signup', {
+           title: "Register",
+           login: req.session.login
+     });
   });
 
   router.post("/signup", (req, res) => {

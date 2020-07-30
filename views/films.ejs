@@ -1,9 +1,14 @@
-<%- include('head') %>
+<%- include('partials/head') %>
 <div class="container">
+  
+        <% if (locals.searchMsg) { %>
+        <p><%= searchMsg %></p>
+        <%  } %>
+  
     <ul>
     <% films.forEach(function(film){ %>
           <li><a href="/film/<%= film._id %>"><%= film.filmName %></a></li>
         <% }) %>
     </ul>    
 </div>
-<%- include('footer'); %>
+<%- include('partials/footer'); %>

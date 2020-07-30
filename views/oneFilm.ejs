@@ -1,6 +1,7 @@
-<%- include('head') %>
+<%- include('partials/head') %>
 <div class="container">
     <h1><%= film.filmName   %></h1>
     <p><%= film.filmDesc  %></p>
+    <p><%= new Date(film.releaseDate).toDateString() %></p>
 </div>
-<%- include('footer'); %>
+<%- include('partials/footer'); %>
