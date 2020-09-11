@@ -53,15 +53,28 @@ app.use((req, res, next) => {
 
 
 
-// Database
+// Database Local Client
 
 var MongoClient = require('mongodb').MongoClient
 
 MongoClient.connect('mongodb://localhost:27017', { useNewUrlParser: true, useUnifiedTopology: true }, function (err, client) {
-
+  console.log("Connected successfully to server");
   app.set('myDb', client.db('myMoviesDb'));
 
 })
+
+/// Database Atlas
+
+// const mongo_username = "xxxx"
+// const mongo_password = "yyyy"
+
+// const uri = `mongodb+srv://${mongo_username}:${mongo_password}@mycluster01.ica5f.azure.mongodb.net/crmdb?retryWrites=true&w=majority`;
+
+// MongoClient.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true }, function (err, client) {
+
+//   app.set('myDb', client.db('myMoviesDb'));
+
+// })
 
 
 app.listen(3000);
