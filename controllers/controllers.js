@@ -90,7 +90,7 @@ module.exports = {
       .collection("filmsCollection")
       .find({ filmName: { $regex: new RegExp(searchVal, "i") } })
       .toArray(function (err, docs) {
-        console.dir(docs);
+       // console.dir(docs);
         if (err) {
           console.error(err);
         }

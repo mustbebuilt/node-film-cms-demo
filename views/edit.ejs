@@ -1,4 +1,4 @@
-<%- include('partials/head') %>
+<%- include('partials/headcms') %>
 <div class="container">
     <h1><%= film.filmName   %></h1>
     <p><%= film.filmDesc  %></p>
@@ -36,7 +36,7 @@
       <input type="date" name="releaseDate" id="releaseDate" value="<%= film.releaseDate  %>">
     </div>
     <div>
-      <input type="submit" value="Edit">
+      <input type="submit" value="Edit" class="edit">
     </div>
     
     

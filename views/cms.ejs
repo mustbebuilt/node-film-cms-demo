@@ -1,8 +1,8 @@
-<%- include('partials/head') %>
+<%- include('partials/headcms') %>
 <div class="container">
      <h2>CMS</h2>
   
-  <p><a href="/cms/insert/">Add New</a></p>
+  <p><a href="/cms/insert/" class="add">Add New</a></p>
   
     <table>
       <tr>
@@ -17,10 +17,10 @@
             <a href="/film/<%= film._id %>"><%= film.filmName %></a>
             </td>
             <td>
-            <a href="/cms/edit/<%= film._id %>">Edit</a>
+            <a href="/cms/edit/<%= film._id %>" class="edit">Edit</a>
             </td>
                         <td>
-            <a href="/cms/delete/<%= film._id %>">Delete</a>
+            <a href="/cms/delete/<%= film._id %>" class="delete">Delete</a>
             </td>
           </tr>
         <% }) %>

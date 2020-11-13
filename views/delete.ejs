@@ -1,13 +1,13 @@
-<%- include('partials/head') %>
+<%- include('partials/headcms') %>
 <div class="container">
     <h1>Delete Film: <%= film.filmName   %></h1>
 <form method="post" action="/cms/delete">
     <input type="hidden" name="id" id="id" value="<%= film._id  %>">
     <div>
-      <input type="submit" value="Delete">
+      <input type="submit" value="Delete" class="delete">
     </div>
   </form>
   
-  <p><a href="/cms/">Keep</a></p>
+  <p><a href="/cms/" class="add">Keep</a></p>
 </div>
 <%- include('partials/footer'); %>

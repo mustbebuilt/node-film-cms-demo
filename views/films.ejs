@@ -4,11 +4,15 @@
         <% if (locals.searchMsg) { %>
         <p><%= searchMsg %></p>
         <%  } %>
-  
-    <ul>
-    <% films.forEach(function(film){ %>
-          <li><a href="/film/<%= film._id %>"><%= film.filmName %></a></li>
-        <% }) %>
-    </ul>    
+        <section class="wrap">
+
+            <% films.forEach(function(film){ %>
+
+            <div class="filmThumb">
+                <div><a href="/film/<%= film._id %>"><img src="/images/<%= film.filmImage %>" alt="<%= film.filmName %>" /></a></div>
+                <h3><a href="/film/<%= film._id %>"><%= film.filmName %></a></h3>
+            </div>
+            <% }) %>
+   </section>  
 </div>
 <%- include('partials/footer'); %>
