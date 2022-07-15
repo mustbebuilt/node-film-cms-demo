@@ -2,6 +2,8 @@
 
 var ObjectId = require("mongodb").ObjectId;
 
+//var ObjectId = MongoClient.ObjectId;
+
 // for encryption
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
@@ -90,7 +92,7 @@ module.exports = {
       .collection("filmsCollection")
       .find({ filmName: { $regex: new RegExp(searchVal, "i") } })
       .toArray(function (err, docs) {
-       // console.dir(docs);
+        // console.dir(docs);
         if (err) {
           console.error(err);
         }
@@ -118,22 +120,23 @@ module.exports = {
         }
         if (docs.length > 0) {
           ///////
-          bcrypt.compare(req.body.password, docs[0].password, function (
-            err,
-            result
-          ) {
-            console.info(result);
-            if (result == true) {
-              req.session.login = true;
-              res.redirect("/");
-            } else {
-              return res.render("login", {
-                title: "Login",
-                loginMsg: "Sorry Invalid Password",
-                login: req.session.login,
-              });
+          bcrypt.compare(
+            req.body.password,
+            docs[0].password,
+            function (err, result) {
+              console.info(result);
+              if (result == true) {
+                req.session.login = true;
+                res.redirect("/");
+              } else {
+                return res.render("login", {
+                  title: "Login",
+                  loginMsg: "Sorry Invalid Password",
+                  login: req.session.login,
+                });
+              }
             }
-          });
+          );
         } else {
           return res.render("login", {
             title: "Login",
