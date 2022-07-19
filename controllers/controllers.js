@@ -1,8 +1,8 @@
 // VIEW CONTROLLER
 
-var ObjectId = require("mongodb").ObjectId;
-
-//var ObjectId = MongoClient.ObjectId;
+//var ObjectId = require("mongodb").ObjectId;
+const dbo = require("../db/connection");
+var ObjectId = dbo.getObjectId();
 
 // for encryption
 const bcrypt = require("bcrypt");
@@ -26,11 +26,10 @@ module.exports = {
       headingOne: "Page made from parts",
     });
   },
-
-  viewAll: function (app, req, res) {
-    console.info("View All controller");
-    app
-      .set("myDb")
+  // async as waiting for connection details
+  viewAll: async function (app, req, res) {
+    dbo
+      .getDb()
       .collection("filmsCollection")
       .find({})
       .toArray(function (err, docs) {
@@ -48,8 +47,8 @@ module.exports = {
 
   viewAllJSON: function (app, req, res) {
     console.info("View All JSON controller");
-    app
-      .set("myDb")
+    dbo
+      .getDb()
       .collection("filmsCollection")
       .find({})
       .toArray(function (err, docs) {
@@ -60,13 +59,13 @@ module.exports = {
       });
   },
 
-  getItem: function (app, req, res, view, viewTitle) {
+  getItem: async function (app, req, res, view, viewTitle) {
     console.info("Get Item controller");
     let filmID = req.params.filmID;
     var o_id = new ObjectId(filmID);
 
-    app
-      .set("myDb")
+    dbo
+      .getDb()
       .collection("filmsCollection")
       .find({ _id: o_id })
       .toArray(function (err, docs) {
@@ -75,7 +74,7 @@ module.exports = {
         }
         console.dir(docs);
         return res.render(view, {
-          title: `${viewTitle} ${docs[0].filmName}`,
+          title: `${viewTitle} ${docs[0].filmTitle}`,
           film: docs[0],
           login: req.session.login,
         });
@@ -87,10 +86,10 @@ module.exports = {
     var searchVal = req.query.searchVal;
     console.info(searchVal);
 
-    app
-      .set("myDb")
+    dbo
+      .getDb()
       .collection("filmsCollection")
-      .find({ filmName: { $regex: new RegExp(searchVal, "i") } })
+      .find({ filmTitle: { $regex: new RegExp(searchVal, "i") } })
       .toArray(function (err, docs) {
         // console.dir(docs);
         if (err) {
@@ -110,8 +109,8 @@ module.exports = {
     let username = req.body.username;
     let password = req.body.password;
     //
-    app
-      .set("myDb")
+    dbo
+      .getDb()
       .collection("appUsers")
       .find({ name: username })
       .toArray(function (err, docs) {
@@ -164,8 +163,8 @@ module.exports = {
       });
     }
 
-    app
-      .set("myDb")
+    dbo
+      .getDb()
       .collection("appUsers")
       .find({ name: username })
       .toArray(function (err, docs) {
@@ -179,8 +178,8 @@ module.exports = {
           bcrypt.hash(req.body.password, saltRounds, function (err, hash) {
             let hashedPwd = hash;
             let newUser = { name: username, password: hashedPwd };
-            app
-              .get("myDb")
+            dbo
+              .getDb()
               .collection("appUsers")
               .insertOne(newUser, function (err, dbResp) {
                 if (err) {
@@ -199,25 +198,21 @@ module.exports = {
 
   cms: function (app, req, res) {
     console.info("CMS List controller");
-    if (!req.session.login) {
-      res.redirect("/login");
-    } else {
-      app
-        .set("myDb")
-        .collection("filmsCollection")
-        .find({})
-        .toArray(function (err, docs) {
-          //console.dir(docs)
-          if (err) {
-            console.error(err);
-          }
-          return res.render("cms", {
-            title: "All Films",
-            films: docs,
-            login: req.session.login,
-          });
+    dbo
+      .getDb()
+      .collection("filmsCollection")
+      .find({})
+      .toArray(function (err, docs) {
+        //console.dir(docs)
+        if (err) {
+          console.error(err);
+        }
+        return res.render("cms", {
+          title: "All Films",
+          films: docs,
+          login: req.session.login,
         });
-    }
+      });
   },
 
   insert: function (app, req, res) {
@@ -230,14 +225,14 @@ module.exports = {
   insertItem: function (app, req, res) {
     console.info("Insert Form Post controller");
     var newFilm = req.body;
-    app
-      .get("myDb")
+    dbo
+      .getDb()
       .collection("filmsCollection")
       .insertOne(newFilm, function (err, dbResp) {
         if (err) {
           console.error(err);
         }
-        if (dbResp.insertedCount === 1) {
+        if (dbResp.acknowledged === true) {
           res.redirect("/cms/");
         } else {
           res.redirect("/cms/error");
@@ -250,15 +245,20 @@ module.exports = {
     var amendFilm = req.body;
     let filmID = amendFilm.id;
     var o_id = new ObjectId(filmID);
-    app
-      .get("myDb")
+    dbo
+      .getDb()
       .collection("filmsCollection")
       .updateOne(
         { _id: o_id },
         {
           $set: {
-            filmName: amendFilm.filmName,
+            filmTitle: amendFilm.filmTitle,
             filmCertificate: amendFilm.filmCertificate,
+            filmDescription: amendFilm.filmDescription,
+            filmImage: amendFilm.filmImage,
+            filmPrice: amendFilm.filmPrice,
+            filmReview: amendFilm.filmReview,
+            releaseDate: amendFilm.releaseDate,
           },
         },
         function (err, dbResp) {
@@ -273,25 +273,26 @@ module.exports = {
         }
       );
   },
-  delete: function (app, req, res) {
+  deleteItem: function (app, req, res) {
     console.info("Delete Form controller");
-    let filmID = req.params.filmID;
+    var formData = req.body;
+    let filmID = formData.filmID;
     var o_id = new ObjectId(filmID);
-
-    app
-      .set("myDb")
+    console.info(filmID);
+    console.dir(o_id);
+    dbo
+      .getDb()
       .collection("filmsCollection")
-      .find({ _id: o_id })
-      .toArray(function (err, docs) {
+      .deleteOne({ _id: o_id }, function (err, dbResp) {
         if (err) {
           console.error(err);
         }
-        console.dir(docs);
-        return res.render("delete", {
-          title: docs[0].filmName,
-          film: docs[0],
-          login: req.session.login,
-        });
+        console.dir(dbResp);
+        if (dbResp.deletedCount == 1) {
+          res.redirect("/cms");
+        } else {
+          res.redirect("/cms/error");
+        }
       });
   },
 };

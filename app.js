@@ -1,5 +1,6 @@
 const express = require("express");
 const path = require("path");
+const port = 3000;
 
 const app = express();
 
@@ -52,20 +53,30 @@ app.use((req, res, next) => {
 });
 
 // Database
+// get driver connection
+const dbo = require("./db/connection");
 
-var MongoClient = require("mongodb").MongoClient;
+app.listen(port, () => {
+  // perform a database connection when server starts
+  dbo.connectToServer(function (err) {
+    if (err) console.error(err);
+  });
+  console.log(`Server is running on port: ${port}`);
+});
 
-MongoClient.connect(
-  "mongodb://localhost:27017",
-  { useNewUrlParser: true, useUnifiedTopology: true },
-  function (err, client) {
-    app.set("myDb", client.db("myMoviesDb"));
-    app.set("myMongoDbClinet", MongoClient);
-  }
-);
+// var MongoClient = require("mongodb").MongoClient;
 
-app.listen(3000);
+// MongoClient.connect(
+//   "mongodb://localhost:27017",
+//   { useNewUrlParser: true, useUnifiedTopology: true },
+//   function (err, client) {
+//     app.set("myDb", client.db("myMoviesDb"));
+//     app.set("myMongoDbClinet", MongoClient);
+//   }
+// );
 
-console.log("Express on 3000");
+// app.listen(3000);
+
+// console.log("Express on 3000");
 
 module.exports = app;
