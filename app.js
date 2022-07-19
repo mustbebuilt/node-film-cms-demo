@@ -52,7 +52,6 @@ app.use((req, res, next) => {
   next();
 });
 
-
 // Database
 // get driver connection
 const dbo = require("./db/connection");
@@ -64,11 +63,5 @@ app.listen(port, () => {
   });
   console.log(`Server is running on port: ${port}`);
 });
-
-
-app.listen(3000);
-
-console.log("Express on 3000");
-
 
 module.exports = app;
