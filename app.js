@@ -52,6 +52,7 @@ app.use((req, res, next) => {
   next();
 });
 
+
 // Database
 // get driver connection
 const dbo = require("./db/connection");
@@ -64,19 +65,10 @@ app.listen(port, () => {
   console.log(`Server is running on port: ${port}`);
 });
 
-// var MongoClient = require("mongodb").MongoClient;
 
-// MongoClient.connect(
-//   "mongodb://localhost:27017",
-//   { useNewUrlParser: true, useUnifiedTopology: true },
-//   function (err, client) {
-//     app.set("myDb", client.db("myMoviesDb"));
-//     app.set("myMongoDbClinet", MongoClient);
-//   }
-// );
+app.listen(3000);
 
-// app.listen(3000);
+console.log("Express on 3000");
 
-// console.log("Express on 3000");
 
 module.exports = app;
