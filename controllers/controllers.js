@@ -9,7 +9,7 @@ const bcrypt = require("bcrypt");
 const saltRounds = 10;
 
 module.exports = {
-  index: function (app, req, res) {
+  index: function (req, res) {
     console.dir(req.session);
     return res.render("index", {
       title: "Welcome",
@@ -18,7 +18,7 @@ module.exports = {
     });
   },
 
-  main: function (app, req, res) {
+  main: function (req, res) {
     return res.render("main", {
       title: "EJS Example from Parts",
       message: "Hello Template built in parts",
@@ -27,7 +27,7 @@ module.exports = {
     });
   },
   // async as waiting for connection details
-  viewAll: async function (app, req, res) {
+  viewAll: async function (req, res) {
     dbo
       .getDb()
       .collection("filmsCollection")
@@ -45,7 +45,7 @@ module.exports = {
       });
   },
 
-  viewAllJSON: function (app, req, res) {
+  viewAllJSON: function (req, res) {
     console.info("View All JSON controller");
     dbo
       .getDb()
@@ -59,7 +59,7 @@ module.exports = {
       });
   },
 
-  getItem: async function (app, req, res, view, viewTitle) {
+  getItem: async function (req, res, view, viewTitle) {
     console.info("Get Item controller");
     let filmID = req.params.filmID;
     var o_id = new ObjectId(filmID);
@@ -81,7 +81,7 @@ module.exports = {
       });
   },
 
-  searchResults: function (app, req, res) {
+  searchResults: function (req, res) {
     console.info("View All controller");
     var searchVal = req.query.searchVal;
     console.info(searchVal);
@@ -104,11 +104,10 @@ module.exports = {
       });
   },
 
-  login: function (app, req, res) {
+  login: function (req, res) {
     // console.dir(req.body);
     let username = req.body.username;
     let password = req.body.password;
-    //
     dbo
       .getDb()
       .collection("appUsers")
@@ -145,7 +144,7 @@ module.exports = {
         }
       });
   },
-  signup: function (app, req, res) {
+  signup: function (req, res) {
     // console.dir(req.body);
     let username = req.body.username;
     if (username === "") {
@@ -196,7 +195,7 @@ module.exports = {
       });
   },
 
-  cms: function (app, req, res) {
+  cms: function (req, res) {
     console.info("CMS List controller");
     dbo
       .getDb()
@@ -215,14 +214,14 @@ module.exports = {
       });
   },
 
-  insert: function (app, req, res) {
+  insert: function (req, res) {
     return res.render("insert", {
       title: "Add Film",
       login: req.session.login,
     });
   },
 
-  insertItem: function (app, req, res) {
+  insertItem: function (req, res) {
     console.info("Insert Form Post controller");
     var newFilm = req.body;
     dbo
@@ -240,7 +239,7 @@ module.exports = {
       });
   },
 
-  amendItem: function (app, req, res) {
+  amendItem: function (req, res) {
     console.info(" Amend POST controller");
     var amendFilm = req.body;
     let filmID = amendFilm.id;
@@ -273,7 +272,7 @@ module.exports = {
         }
       );
   },
-  deleteItem: function (app, req, res) {
+  deleteItem: function (req, res) {
     console.info("Delete Form controller");
     var formData = req.body;
     let filmID = formData.filmID;

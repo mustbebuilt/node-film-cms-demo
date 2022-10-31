@@ -2,36 +2,38 @@ const express = require("express");
 
 const router = express.Router();
 
+const { body, validationResult } = require('express-validator');
+
 // add myControllers
 const myControllers = require("../controllers/controllers.js");
 
 console.dir(myControllers);
 
-module.exports = (app) => {
+module.exports = () => {
   router.get("/", (req, res) => {
-    myControllers.index(app, req, res);
+    myControllers.index(req, res);
   });
 
   router.get("/main", (req, res) => {
-    myControllers.main(app, req, res);
+    myControllers.main(req, res);
   });
 
   router.get("/allfilms", (req, res) => {
-    myControllers.viewAll(app, req, res);
+    myControllers.viewAll(req, res);
   });
 
   router.get("/api/allfilms", (req, res) => {
-    myControllers.viewAllJSON(app, req, res);
+    myControllers.viewAllJSON(req, res);
   });
 
   router.get("/film/:filmID", (req, res) => {
-    //myControllers.viewItem(app, req, res);
-    myControllers.getItem(app, req, res, "oneFilm", "View: " )
+    //myControllers.viewItem(req, res);
+    myControllers.getItem(req, res, "oneFilm", "View: " )
   });
   
   router.get("/search", (req, res) => {
-    //myControllers.viewItem(app, req, res);
-    myControllers.searchResults(app, req, res);
+    //myControllers.viewItem(req, res);
+    myControllers.searchResults(req, res);
   });
 
   router.get("/login", (req, res) => {
@@ -40,9 +42,26 @@ module.exports = (app) => {
            login: req.session.login
      });
   });
-
-  router.post("/login", (req, res) => {
-    myControllers.login(app, req, res);
+  // example user server side validation via "express-validator"
+  router.post("/login",   
+  // username must be an email
+  body('username').isEmail(),
+  // password must be at least 5 chars long
+  body('password').isLength({ min: 5 }),
+  (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      //return res.status(400).json({ errors: errors.array() });
+      let erArray = errors.array();
+      let erMsg = `${erArray[0].param} error - ${erArray[0].msg}` 
+      //return res.redirect("/login")
+      return res.render("login", {
+                  title: "Login",
+                  loginMsg: erMsg,
+                  login: req.session.login,
+                });
+    }
+    myControllers.login(req, res);
   });
 
   router.get("/logout", (req, res) => {
@@ -59,7 +78,7 @@ module.exports = (app) => {
   });
 
   router.post("/signup", (req, res) => {
-    myControllers.signup(app, req, res);
+    myControllers.signup(req, res);
   });
 
   // add POST, PUT AND DELETE ROUTES
@@ -67,7 +86,7 @@ module.exports = (app) => {
     if(!req.session.login){
       return res.redirect("/login");
     }else{
-    myControllers.cms(app, req, res);
+    myControllers.cms(req, res);
     }
   });
   
@@ -75,7 +94,7 @@ module.exports = (app) => {
     if(!req.session.login){
       return res.redirect("/login");
     }else{
-     myControllers.getItem(app, req, res, "edit", "Edit Film: " )
+     myControllers.getItem(req, res, "edit", "Edit Film: " )
     }
   });
   
@@ -83,7 +102,7 @@ module.exports = (app) => {
     if(!req.session.login){
       return res.redirect("/login");
     }else{
-    myControllers.amendItem(app, req, res);
+    myControllers.amendItem(req, res);
     }
   });
   
@@ -91,7 +110,7 @@ module.exports = (app) => {
     if(!req.session.login){
       return res.redirect("/login");
     }else{
-    myControllers.insert(app, req, res);
+    myControllers.insert(req, res);
     }
   });
   
@@ -99,7 +118,7 @@ module.exports = (app) => {
     if(!req.session.login){
       return res.redirect("/login");
     }else{
-    myControllers.insertItem(app, req, res);
+    myControllers.insertItem(req, res);
     }
   });
   
@@ -107,7 +126,7 @@ module.exports = (app) => {
     if(!req.session.login){
       return res.redirect("/login");
     }else{
-       myControllers.getItem(app, req, res, "delete", "Delete Film: " )
+       myControllers.getItem(req, res, "delete", "Delete Film: " )
     }
   });
   
@@ -115,7 +134,7 @@ module.exports = (app) => {
     if(!req.session.login){
       return res.redirect("/login");
     }else{
-    myControllers.deleteItem(app, req, res);
+    myControllers.deleteItem(req, res);
     }
   });
   
