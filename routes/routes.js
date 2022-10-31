@@ -64,33 +64,59 @@ module.exports = (app) => {
 
   // add POST, PUT AND DELETE ROUTES
   router.get("/cms/", (req, res) => {
+    if(!req.session.login){
+      return res.redirect("/login");
+    }else{
     myControllers.cms(app, req, res);
+    }
   });
   
   router.get("/cms/edit/:filmID", (req, res) => {
-    //myControllers.amend(app, req, res);
+    if(!req.session.login){
+      return res.redirect("/login");
+    }else{
      myControllers.getItem(app, req, res, "edit", "Edit Film: " )
+    }
   });
   
   router.post("/cms/edit", (req, res) => {
+    if(!req.session.login){
+      return res.redirect("/login");
+    }else{
     myControllers.amendItem(app, req, res);
+    }
   });
   
   router.get("/cms/insert", (req, res) => {
+    if(!req.session.login){
+      return res.redirect("/login");
+    }else{
     myControllers.insert(app, req, res);
+    }
   });
   
   router.post("/cms/insert", (req, res) => {
+    if(!req.session.login){
+      return res.redirect("/login");
+    }else{
     myControllers.insertItem(app, req, res);
+    }
   });
   
   router.get("/cms/delete/:filmID", (req, res) => {
-//     myControllers.delete(app, req, res);
+    if(!req.session.login){
+      return res.redirect("/login");
+    }else{
        myControllers.getItem(app, req, res, "delete", "Delete Film: " )
+    }
   });
   
   router.post("/cms/delete", (req, res) => {
+    if(!req.session.login){
+      return res.redirect("/login");
+    }else{
     myControllers.deleteItem(app, req, res);
+    }
   });
   
 
