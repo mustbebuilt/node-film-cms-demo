@@ -3,10 +3,15 @@
     <h1>Sign Up</h1>
     
         <% if (locals.registerMsg) { %>
-        <p class="error"><%= registerMsg %></p>
-        <%  } %>
-  
-    <form action="/signup" method="post" class="logReg">
+        <p class="error">
+          <%= registerMsg %>
+        </p>
+          <% } else { %>
+        <p class="error hide">
+        </p>
+       <% } %>
+
+    <form action="/signup" method="post" class="logReg" id="signUpForm">
       <div>
         <label for="username">Username</label>
         <input type="text" name="username" id="username" />
@@ -22,4 +27,5 @@
       </div>
     </form>
 </div>
+<script src="/js/formvalidation.js"></script>
 <%- include('partials/footer'); %>
