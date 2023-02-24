@@ -27,7 +27,11 @@ sudo cp /Users/martincooper/Downloads/mongodb-macos-x86_64-5.0.9/bin/\* /usr/loc
 sudo mkdir -p /usr/local/var/mongodb
 sudo mkdir -p /usr/local/var/mongodb
 
+## Use on MAC when in /usr/local/var/
+
 sudo mongod --dbpath /usr/local/var/mongodb --logpath /usr/local/var/log/mongodb/mongo.log
+
+mongod --config /usr/local/etc/mongod.conf --fork
 
 ## Run Mongo
 
