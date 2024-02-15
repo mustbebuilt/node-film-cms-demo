@@ -1,9 +1,10 @@
 // VIEW CONTROLLER
 
-//var ObjectId = require("mongodb").ObjectId;
-const dbo = require("../db/connection");
-var ObjectId = dbo.getObjectId();
-
+// Import the necessary modules
+const { db } = require('../db/connection');
+const ObjectId = require("mongodb").ObjectId; 
+const filmCollection = db.collection('filmsCollection');
+const appUsers = db.collection('appUsers');
 // for encryption
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
@@ -28,95 +29,58 @@ module.exports = {
   },
   // async as waiting for connection details
   viewAll: async function (req, res) {
-    dbo
-      .getDb()
-      .collection("filmsCollection")
-      .find({})
-      .toArray(function (err, docs) {
-        //console.dir(docs)
-        if (err) {
-          console.error(err);
-        }
+    const films = await filmCollection.find().toArray();
         return res.render("films", {
           title: "All Films",
-          films: docs,
+          films: films,
           login: req.session.login,
         });
-      });
   },
 
-  viewAllJSON: function (req, res) {
+  viewAllJSON: async function (req, res) {
     console.info("View All JSON controller");
-    dbo
-      .getDb()
-      .collection("filmsCollection")
-      .find({})
-      .toArray(function (err, docs) {
-        if (err) {
-          console.error(err);
-        }
-        res.json(docs);
-      });
+     const films = await filmCollection.find().toArray();
+    return res.json(films);
   },
 
   getItem: async function (req, res, view, viewTitle) {
     console.info("Get Item controller");
-    let filmID = req.params.filmID;
-    var o_id = new ObjectId(filmID);
-
-    dbo
-      .getDb()
-      .collection("filmsCollection")
-      .find({ _id: o_id })
-      .toArray(function (err, docs) {
-        if (err) {
-          console.error(err);
-        }
-        console.dir(docs);
-        return res.render(view, {
-          title: `${viewTitle} ${docs[0].filmTitle}`,
-          film: docs[0],
+     let filmID = req.params.filmID;
+    let o_id = new ObjectId(filmID);
+    const film  = await filmCollection.find({ _id: o_id }).toArray();
+    return res.render(view, {
+          title: `${viewTitle} ${film[0].filmTitle}`,
+          film: film[0],
           login: req.session.login,
-        });
-      });
+        }); 
   },
 
-  searchResults: function (req, res) {
+  searchResults: async function (req, res) {
     console.info("View All controller");
     var searchVal = req.query.searchVal;
     console.info(searchVal);
 
-    dbo
-      .getDb()
-      .collection("filmsCollection")
-      .find({ filmTitle: { $regex: new RegExp(searchVal, "i") } })
-      .toArray(function (err, docs) {
-        // console.dir(docs);
-        if (err) {
-          console.error(err);
-        }
+const films = await filmCollection.find({ filmTitle: { $regex: new RegExp(searchVal, "i") } }).toArray();
+
+   
         return res.render("films", {
           title: "Search Results for " + searchVal,
-          searchMsg: `Your Search Found ${docs.length} films.`,
-          films: docs,
+          searchMsg: `Your Search Found ${films.length} films.`,
+          films: films,
           login: req.session.login,
         });
-      });
+
   },
 
-  login: function (req, res) {
-    // console.dir(req.body);
+  login: async function (req, res) {
+    console.info("Login controller");
+    console.dir(req.body);
     let username = req.body.username;
     let password = req.body.password;
-    dbo
-      .getDb()
-      .collection("appUsers")
-      .find({ name: username })
-      .toArray(function (err, docs) {
-        if (err) {
-          console.error(err);
-        }
-        if (docs.length > 0) {
+    console.info(username);
+    const docs = await appUsers.find({ name: username }).toArray();
+    console.dir(docs);
+    if (docs.length > 0) {
           ///////
           bcrypt.compare(
             req.body.password,
@@ -142,76 +106,65 @@ module.exports = {
             login: req.session.login,
           });
         }
-      });
   },
-  signup: function (req, res) {
-    // console.dir(req.body);
-    let username = req.body.username;
-    if (username === "") {
+
+  signup: async function (req, res) {
+  let username = req.body.username;
+  let password = req.body.password;
+
+  // Check if username or password is empty
+  if (!username || !password) {
+    return res.render("signup", {
+      title: "Register",
+      registerMsg: "Username and password are required",
+      login: req.session.login,
+    });
+  }
+
+  try {
+    // Check if username already exists
+    const existingUser = await appUsers.findOne({ name: username });
+    if (existingUser) {
       return res.render("signup", {
         title: "Register",
-        registerMsg: "Sorry username required",
-        login: req.session.login,
-      });
-    }
-    if (req.body.password === "") {
-      return res.render("signup", {
-        title: "Register",
-        registerMsg: "Sorry password required",
+        registerMsg: "Sorry, username already exists",
         login: req.session.login,
       });
     }
 
-    dbo
-      .getDb()
-      .collection("appUsers")
-      .find({ name: username })
-      .toArray(function (err, docs) {
-        if (docs.length > 0) {
-          return res.render("signup", {
-            title: "Register",
-            registerMsg: "New User Required",
-            login: req.session.login,
-          });
-        } else {
-          bcrypt.hash(req.body.password, saltRounds, function (err, hash) {
-            let hashedPwd = hash;
-            let newUser = { name: username, password: hashedPwd };
-            dbo
-              .getDb()
-              .collection("appUsers")
-              .insertOne(newUser, function (err, dbResp) {
-                if (err) {
-                  console.error(err);
-                }
-                if (dbResp.insertedCount === 1) {
-                  res.redirect("/login");
-                } else {
-                  res.redirect("/login");
-                }
-              });
-          });
-        }
-      });
-  },
+    // Hash the password
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-  cms: function (req, res) {
+    // Create a new user object
+    const newUser = { name: username, password: hashedPassword };
+
+    // Insert the new user into the appUsers collection
+    const result = await appUsers.insertOne(newUser);
+    if (result.insertedCount === 1) {
+      // User successfully inserted
+      return res.redirect("/login");
+    } else {
+      // User insertion failed
+      return res.redirect("/login");
+    }
+  } catch (error) {
+    console.error("Error signing up:", error);
+    return res.status(500).send("Internal Server Error");
+  }
+}
+,
+
+
+  cms: async function (req, res) {
     console.info("CMS List controller");
-    dbo
-      .getDb()
-      .collection("filmsCollection")
-      .find({})
-      .toArray(function (err, docs) {
-        //console.dir(docs)
-        if (err) {
-          console.error(err);
-        }
+      const films = await filmCollection.find().toArray();
+    
         return res.render("cms", {
           title: "All Films",
-          films: docs,
+          films: films,
           login: req.session.login,
         });
-      });
+    
   },
 
   insert: function (req, res) {
@@ -221,77 +174,80 @@ module.exports = {
     });
   },
 
-  insertItem: function (req, res) {
+insertItem: async function (req, res) {
     console.info("Insert Form Post controller");
     var newFilm = req.body;
-    dbo
-      .getDb()
-      .collection("filmsCollection")
-      .insertOne(newFilm, function (err, dbResp) {
-        if (err) {
-          console.error(err);
-        }
-        if (dbResp.acknowledged === true) {
-          res.redirect("/cms/");
+    try {
+        const result = await filmCollection.insertOne(newFilm);
+        console.log(result);
+        if (result.acknowledged === true) {
+            console.log("Film added successfully.");
+            return res.redirect('/cms'); // Redirect to /cms if data is added successfully
         } else {
-          res.redirect("/cms/error");
+            console.error("Failed to add film.");
+            return res.redirect('/cms/error');
+            // return res.status(500).send("Failed to add film."); 
+            // Return an error response if data insertion failed
         }
-      });
-  },
+    } catch (error) {
+        console.error("Error adding film:", error);
+        return res.redirect('/cms/error');
+        // return res.status(500).send("Error adding film.");
+         // Return an error response if an exception occurred during insertion
+    }
+},
 
-  amendItem: function (req, res) {
-    console.info(" Amend POST controller");
-    var amendFilm = req.body;
-    let filmID = amendFilm.id;
-    var o_id = new ObjectId(filmID);
-    dbo
-      .getDb()
-      .collection("filmsCollection")
-      .updateOne(
-        { _id: o_id },
-        {
-          $set: {
-            filmTitle: amendFilm.filmTitle,
-            filmCertificate: amendFilm.filmCertificate,
-            filmDescription: amendFilm.filmDescription,
-            filmImage: amendFilm.filmImage,
-            filmPrice: amendFilm.filmPrice,
-            filmReview: amendFilm.filmReview,
-            releaseDate: amendFilm.releaseDate,
-          },
+amendItem: async function (req, res) {
+  console.info("Amend POST controller");
+  var amendFilm = req.body;
+  let filmID = amendFilm.id;
+  var o_id = new ObjectId(filmID);
+
+  try {
+    const result = await filmCollection.updateOne(
+      { _id: o_id },
+      {
+        $set: {
+          filmTitle: amendFilm.filmTitle,
+          filmCertificate: amendFilm.filmCertificate,
+          filmDescription: amendFilm.filmDescription,
+          filmImage: amendFilm.filmImage,
+          filmPrice: amendFilm.filmPrice,
+          filmReview: amendFilm.filmReview,
+          releaseDate: amendFilm.releaseDate,
         },
-        function (err, dbResp) {
-          if (err) {
-            console.error(err);
-          }
-          if (dbResp.modifiedCount === 1) {
-            res.redirect("/cms");
-          } else {
-            res.redirect("/cms/error");
-          }
-        }
-      );
-  },
-  deleteItem: function (req, res) {
-    console.info("Delete Form controller");
-    var formData = req.body;
-    let filmID = formData.filmID;
-    var o_id = new ObjectId(filmID);
-    console.info(filmID);
-    console.dir(o_id);
-    dbo
-      .getDb()
-      .collection("filmsCollection")
-      .deleteOne({ _id: o_id }, function (err, dbResp) {
-        if (err) {
-          console.error(err);
-        }
-        console.dir(dbResp);
-        if (dbResp.deletedCount == 1) {
-          res.redirect("/cms");
-        } else {
-          res.redirect("/cms/error");
-        }
-      });
-  },
+      }
+    );
+
+    if (result.modifiedCount === 1) {
+      res.redirect("/cms");
+    } else {
+      res.redirect("/cms/error");
+    }
+  } catch (err) {
+    console.error(err);
+    res.redirect("/cms/error");
+  }
+},
+
+deleteItem: async function (req, res) {
+  console.info("Delete Form controller");
+  var formData = req.body;
+  let filmID = formData.filmID;
+  var o_id = new ObjectId(filmID);
+
+  try {
+    const result = await filmCollection.deleteOne({ _id: o_id });
+
+    if (result.deletedCount === 1) {
+      res.redirect("/cms");
+    } else {
+      res.redirect("/cms/error");
+    }
+  } catch (err) {
+    console.error(err);
+    res.redirect("/cms/error");
+  }
+}
+
 };

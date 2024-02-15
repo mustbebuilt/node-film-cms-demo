@@ -1,3 +1,4 @@
+require('dotenv').config({path: __dirname + '/.env'});
 const express = require("express");
 const path = require("path");
 const port = 3000;
@@ -57,10 +58,7 @@ app.use((req, res, next) => {
 const dbo = require("./db/connection");
 
 app.listen(port, () => {
-  // perform a database connection when server starts
-  dbo.connectToServer(function (err) {
-    if (err) console.error(err);
-  });
+  
   console.log(`Server is running on port: ${port}`);
 });
 

@@ -1,29 +1,26 @@
-const { MongoClient } = require("mongodb");
-const Db = "mongodb://127.0.0.1:27017";
-const client = new MongoClient(Db, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
+const { MongoClient } = require('mongodb');
 
-var dbConnection;
+const {
+    MONGO_HOST,
+    MONGO_USERNAME,
+    MONGO_PASSWORD,
+    MONGO_PORT,
+    MONGO_DBNAME,
+    MONGO_LOCAL,
+} = process.env;
+
+let MONGO_URI = 'mongodb+srv://'+MONGO_USERNAME+':'+MONGO_PASSWORD+'@'+MONGO_HOST+'/'+MONGO_DBNAME+'?authSource=admin';
+
+if (MONGO_LOCAL === 'true') {
+  MONGO_URI = `mongodb://${MONGO_HOST}:${MONGO_PORT}/${MONGO_DBNAME}`;
+}
+
+console.log(MONGO_URI);
+
+const client = new MongoClient(MONGO_URI);
+const db = client.db();
 
 module.exports = {
-  connectToServer: function (callback) {
-    client.connect(function (err, db) {
-      // Verify we got a good "db" object
-      if (db) {
-        dbConnection = db.db("myMoviesDb");
-        console.log("Successfully connected to MongoDB.");
-      }
-      return callback(err);
-    });
-  },
-
-  getDb: function () {
-    return dbConnection;
-  },
-  getObjectId: function () {
-    var ObjectId = require("mongodb").ObjectId;
-    return ObjectId;
-  },
-};
+    client,
+    db,
+  };
